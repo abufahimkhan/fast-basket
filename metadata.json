@@ -1,0 +1,5 @@
+{
+  "name": "Moveon Global - Premium Shopping",
+  "description": "A high-performance, animated e-commerce experience inspired by Moveon Global, featuring cross-border product discovery and seamless ordering.",
+  "requestFramePermissions": ["geolocation"]
+}
