@@ -39,9 +39,8 @@ export default function BottomNav() {
             >
               <div className="relative">
                 <Icon
-                  className={`w-6 h-6 transition-colors duration-200 ${
-                    isActive ? 'text-orange-500' : 'text-slate-400 group-hover:text-slate-600'
-                  }`}
+                  className={`w-6 h-6 transition-colors duration-200 ${isActive ? 'text-orange-500' : 'text-slate-400 group-hover:text-slate-600'
+                    }`}
                 />
                 {item.badge && mounted && totalItems > 0 && (
                   <span
@@ -52,9 +51,8 @@ export default function BottomNav() {
                 )}
               </div>
               <span
-                className={`text-[10px] font-medium transition-colors duration-200 ${
-                  isActive ? 'text-orange-500' : 'text-slate-400 group-hover:text-slate-600'
-                }`}
+                className={`text-[10px] font-medium transition-colors duration-200 ${isActive ? 'text-orange-500' : 'text-slate-400 group-hover:text-slate-600'
+                  }`}
               >
                 {item.label}
               </span>
