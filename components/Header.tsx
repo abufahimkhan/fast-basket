@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
-import { useCart } from '@/lib/cart-context';
-import { motion, AnimatePresence } from 'motion/react';
+import React, { useState } from "react";
+import Link from "next/link";
+import { Search, ShoppingCart, User, Menu, X, Heart } from "lucide-react";
+import { useCart } from "@/lib/cart-context";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function Header() {
-  const { totalItems } = useCart();
+  const { totalItems, wishlist } = useCart();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -40,24 +40,42 @@ export default function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <button 
+          <button
             onClick={() => setIsSearchOpen(!isSearchOpen)}
             className="md:hidden p-2 hover:bg-slate-100 rounded-full transition-colors"
           >
             <Search className="w-5 h-5 text-slate-600" />
           </button>
-          
-          <Link href="/login" className="hidden sm:flex items-center gap-2 p-2 hover:bg-slate-100 rounded-full transition-colors">
+
+          <Link
+            href="/wishlist"
+            className="hidden sm:flex relative p-2 hover:bg-slate-100 rounded-full transition-colors items-center justify-center"
+          >
+            <Heart className="w-5 h-5 text-slate-600" />
+
+            {/* Badge */}
+            {mounted && wishlist.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
+                {wishlist.length > 99 ? "99+" : wishlist.length}
+              </span>
+            )}
+          </Link>
+
+          <Link
+            href="/login"
+            className="hidden sm:flex items-center gap-2 p-2 hover:bg-slate-100 rounded-full transition-colors"
+          >
             <User className="w-5 h-5 text-slate-600" />
             <span className="text-sm font-medium text-slate-700">Account</span>
           </Link>
 
-          <Link href="/cart" className="relative p-2 hover:bg-slate-100 rounded-full transition-colors">
+          <Link
+            href="/cart"
+            className="relative p-2 hover:bg-slate-100 rounded-full transition-colors"
+          >
             <ShoppingCart className="w-5 h-5 text-slate-600" />
             {mounted && totalItems > 0 && (
-              <span
-                className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white"
-              >
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
                 {totalItems}
               </span>
             )}
