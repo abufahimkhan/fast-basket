@@ -1,22 +1,22 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Star, ShoppingCart, Heart } from 'lucide-react';
-import { Product } from '@/types/product';
-import { useCart } from '@/lib/cart-context';
+import React from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Star, ShoppingCart, Heart } from "lucide-react";
+import { Product } from "@/types/product";
+import { useCart } from "@/lib/cart-context";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const {addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
+  const liked = isInWishlist(product.id);
 
   return (
     <div className="group relative bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg sm:hover:shadow-xl transition-all duration-300">
-      
       {/* Badges */}
       <div className="absolute top-2 sm:top-3 left-2 sm:left-3 z-10 flex flex-col gap-1 sm:gap-2">
         {product.isNew && (
@@ -32,8 +32,22 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Wishlist */}
-      <button className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 p-1.5 sm:p-2 bg-white/80 backdrop-blur-sm rounded-full text-slate-400 hover:text-rose-500 hover:bg-white transition-all shadow-sm">
-        <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          if (liked) {
+            removeFromWishlist(product.id);
+          } else {
+            addToWishlist(product);
+          }
+        }}
+        className={`absolute top-2 right-2 z-10 p-2 rounded-full cursor-pointer
+    ${liked ? "bg-orange-500 text-white" : "bg-white/80 text-slate-400"}
+  `}
+      >
+        <Heart className="w-4 h-4" fill={liked ? "currentColor" : "none"} />
       </button>
 
       {/* Image */}
@@ -59,7 +73,6 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       {/* Content */}
       <div className="p-3 sm:p-4">
-        
         {/* Category */}
         <Link
           href={`/shop?category=${product.category.toLowerCase()}`}
@@ -90,7 +103,6 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Price + Action */}
         <div className="flex items-end justify-between gap-2">
-          
           {/* Price */}
           <div className="flex flex-col">
             <span className="text-sm sm:text-base md:text-lg font-bold text-slate-900">

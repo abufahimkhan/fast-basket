@@ -16,7 +16,7 @@ const navItems = [
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const { totalItems } = useCart();
+  const { totalItems, wishlist } = useCart();
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -52,6 +52,13 @@ export default function BottomNav() {
                     {totalItems > 99 ? "99+" : totalItems}
                   </span>
                 )}
+
+                {/* wishlist  */}
+              {item.href === "/wishlist" && mounted && wishlist.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 text-white text-[8px] sm:text-[9px] font-bold flex items-center justify-center rounded-full border border-white">
+                  {wishlist.length > 99 ? "99+" : wishlist.length}
+                </span>
+              )}
               </div>
 
               {/* Label */}
