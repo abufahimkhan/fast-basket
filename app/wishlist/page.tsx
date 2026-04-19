@@ -21,7 +21,7 @@ export default function WishlistPage() {
         </h1>
 
         {wishlist.length === 0 ? (
-          // ✅ Empty State
+          // ✅ Empty State value
           <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
             <div className="w-24 h-24 bg-rose-50 rounded-full flex items-center justify-center mb-6">
               <Heart className="w-10 h-10 text-rose-300" />
