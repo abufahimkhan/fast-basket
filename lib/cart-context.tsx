@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { CartItem, Product } from '@/types/product';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { CartItem, Product } from "@/types/product";
 
 interface CartContextType {
   items: CartItem[];
@@ -11,6 +11,11 @@ interface CartContextType {
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
+
+  wishlist: Product[];
+  addToWishlist: (product: Product) => void;
+  removeFromWishlist: (productId: string) => void;
+  isInWishlist: (productId: string) => boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -19,9 +24,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Wishlist:
+  const [wishlist, setWishlist] = useState<Product[]>([]);
+
   // Load cart from local storage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
+    const savedCart = localStorage.getItem("cart");
     if (savedCart) {
       try {
         const parsed = JSON.parse(savedCart);
@@ -30,7 +38,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           setItems(parsed);
         }
       } catch (e) {
-        console.error('Failed to parse cart', e);
+        console.error("Failed to parse cart", e);
       }
     }
     setIsInitialized(true);
@@ -40,9 +48,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isInitialized && Array.isArray(items)) {
       try {
-        localStorage.setItem('cart', JSON.stringify(items));
+        localStorage.setItem("cart", JSON.stringify(items));
       } catch (e) {
-        console.error('Failed to save cart', e);
+        console.error("Failed to save cart", e);
       }
     }
   }, [items, isInitialized]);
@@ -52,7 +60,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item,
         );
       }
       return [...prev, { ...product, quantity: 1 }];
@@ -69,14 +79,58 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     setItems((prev) =>
-      prev.map((item) => (item.id === productId ? { ...item, quantity } : item))
+      prev.map((item) =>
+        item.id === productId ? { ...item, quantity } : item,
+      ),
     );
   };
 
   const clearCart = () => setItems([]);
 
-  const totalItems = Array.isArray(items) ? items.reduce((sum, item) => sum + item.quantity, 0) : 0;
-  const totalPrice = Array.isArray(items) ? items.reduce((sum, item) => sum + item.price * item.quantity, 0) : 0;
+  const totalItems = Array.isArray(items)
+    ? items.reduce((sum, item) => sum + item.quantity, 0)
+    : 0;
+  const totalPrice = Array.isArray(items)
+    ? items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    : 0;
+
+  // Load wishlist from local storage on mount
+  useEffect(() => {
+    const savedWishlist = localStorage.getItem("wishlist");
+    if (savedWishlist) {
+      try {
+        const parsed = JSON.parse(savedWishlist);
+        if (Array.isArray(parsed)) {
+          setWishlist(parsed);
+        }
+      } catch (e) {
+        console.error("Failed to parse wishlist", e);
+      }
+    }
+  }, []);
+
+  //  Save wishlist to local storage on change
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  const addToWishlist = (product: Product) => {
+    setWishlist((prev) => {
+      const exists = prev.find((item) => item.id === product.id);
+      if (exists) {
+        return prev;
+      }
+      return [...prev, product];
+    });
+  };
+
+  const removeFromWishlist = (productId: string) => {
+    setWishlist((prev) => prev.filter((item) => item.id !== productId));
+  };
+
+  const isInWishlist = (productId: string) => {
+    return wishlist.some((item) => item.id === productId);
+  };
 
   return (
     <CartContext.Provider
@@ -88,6 +142,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         totalItems,
         totalPrice,
+
+        wishlist,
+        addToWishlist,
+        removeFromWishlist,
+        isInWishlist,
       }}
     >
       {children}
@@ -98,7 +157,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 export function useCart() {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 }
